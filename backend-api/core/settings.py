@@ -26,7 +26,7 @@ DB_PASSWORD = read_secret('DB_PASSWORD_FILE')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend-api']
 
 
 # AUTH_USER_MODEL = "users.User"
@@ -50,7 +50,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    # 'users.apps.UsersConfig',
+    'users.apps.UsersConfig',
 ]
 
 

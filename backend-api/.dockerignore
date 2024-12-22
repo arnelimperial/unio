@@ -5,3 +5,9 @@ __pycache__
 *.db
 *.sqlite3
 .env
+Dockerfile
+Dockerfile.*
+.gitignore
+.dockerignore
+.venv
+entrypoint.sh

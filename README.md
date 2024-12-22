@@ -26,15 +26,26 @@ $ docker system prune -a && docker images prune -a && docker volume prune -a
 $ docker compose up --build -d
 ```
 
-#### Running Migrations and Creating Superuser
+#### Running Migrations, Creating Superuser & Generate Django App
 
 ```bash
 $ docker-compose exec backend-api python manage.py migrate --noinput
-$ docker-compose exec backend-api python manage.py createsuperuser 
+$ docker-compose exec backend-api python manage.py createsuperuser
+$ docker-compose exec backend-api python manage.py startapp users 
 ```
 
 #### Generate Secret Key
 
 ```bash
 $ python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+
+#### Checking Directories inside a Running Containers
+
+```bash
+$ docker-compose up -d # run the service; can be on detach mode
+$ docker-compose exec backend-api ls /usr/src/app # service name & the volume
+$ docker-compose exec backend-api ls -la /usr/src/app # check hidden files
+$ docker-compose exec backend-api sh # interact with the backend-api service environment
+$ exit 
 ```

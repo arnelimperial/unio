@@ -23,7 +23,7 @@ services:
       - redis
     deploy:
       replicas: 3
-    restart: unless-stopped
+    restart: 'no'
     networks:
       - backend_network 
 
@@ -37,7 +37,7 @@ services:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-    restart: on-failure
+    restart: 'no'
     ports:
       - 5432:5432
     networks:
@@ -48,7 +48,7 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    restart: on-failure
+    restart: 'no'
 
   nginx:
     image: nginx:latest
@@ -58,7 +58,7 @@ services:
       - 7800:7800
     depends_on:
       - backend-api
-    restart: on-failure
+    restart: 'no'
     networks:
       - backend_network
 
