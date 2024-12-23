@@ -1,4 +1,5 @@
 import os
+from decouple import config
 from pathlib import Path
 from corsheaders.defaults import default_headers
 
@@ -12,24 +13,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-def read_secret(secret_path):
-    try:
-        with open(os.environ[secret_path]) as f:
-            return f.read().strip()
-    except FileNotFoundError:
-        raise Exception(f'Secret {secret_path} not found')
-
-SECRET_KEY = read_secret('SECRET_KEY_FILE')
-
-DB_PASSWORD = read_secret('DB_PASSWORD_FILE')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend-api']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django-app']
 
 
-# AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User"
 
 # Application definition
 
@@ -95,12 +87,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Use PostgreSQL backend
-        'NAME': os.environ.get('DB_NAME', 'mydatabase'),
-        'USER': os.environ.get('DB_USER', 'myuser'),
-        'PASSWORD': DB_PASSWORD,
-        'HOST': os.environ.get('POSTGRES_HOST', 'database'), # host value must be the same with postgres service in docker compose
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='mydatabase'),
+        'USER': config('DB_USER', default='myuser'),
+        'PASSWORD': config('DB_PASSWORD', default='mypassword'),
+        'HOST': config('POSTGRES_HOST', default='localhost'), # Since it's running on the same machine
+        'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }
 
@@ -158,7 +150,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Your frontend URL
-    "http://127.0.0.1:8000", 
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:8001",
+    "http://127.0.0.1:8002",
+    "http://127.0.0.1:7800"
+
 ]
 
 CORS_ALLOW_HEADERS = default_headers + (

@@ -14,6 +14,13 @@ $ docker secret ls # only for docker secrets create
 $ docker secret rm my_secret # delete secret
 ```
 
+#### Create Docker Network
+
+```bash
+$ docker network create project_network
+$ docker network ls
+```
+
 #### Clean Slate
 
 ```bash
@@ -49,3 +56,12 @@ $ docker-compose exec backend-api ls -la /usr/src/app # check hidden files
 $ docker-compose exec backend-api sh # interact with the backend-api service environment
 $ exit 
 ```
+
+# First instance
+python manage.py runserver 0.0.0.0:8000
+
+# Second instance
+python manage.py runserver 0.0.0.0:8001
+
+# Third instance
+python manage.py runserver 0.0.0.0:8002
