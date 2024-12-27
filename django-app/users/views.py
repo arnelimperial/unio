@@ -1,11 +1,9 @@
-from django.contrib.auth import forms, get_user_model
 from rest_framework import generics, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserRegistrationSerializer, UserLoginSerializer
-
-User = get_user_model()
+from .models import User
 
 class UserRegistrationView(generics.CreateAPIView):
     queryset = User.objects.all()

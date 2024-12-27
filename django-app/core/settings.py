@@ -1,5 +1,5 @@
 import os
-from decouple import config
+from decouple import config, Csv
 from pathlib import Path
 from corsheaders.defaults import default_headers
 
@@ -13,12 +13,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='secretkey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django-app']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost, 127.0.0.1, django-app, host.docker.internal', cast=Csv())
 
 
 AUTH_USER_MODEL = "users.User"
@@ -91,7 +91,7 @@ DATABASES = {
         'NAME': config('DB_NAME', default='mydatabase'),
         'USER': config('DB_USER', default='myuser'),
         'PASSWORD': config('DB_PASSWORD', default='mypassword'),
-        'HOST': config('POSTGRES_HOST', default='localhost'), # Since it's running on the same machine
+        'HOST': config('POSTGRES_HOST', default='localhost'), # Use localhost since Django is running outside Docker
         'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }
@@ -149,12 +149,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Your frontend URL
+    "http://localhost:5173",
     "http://127.0.0.1:8000",
     "http://127.0.0.1:8001",
     "http://127.0.0.1:8002",
-    "http://127.0.0.1:7800"
-
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
 ]
 
 CORS_ALLOW_HEADERS = default_headers + (
@@ -169,5 +169,9 @@ CORS_ALLOW_HEADERS = default_headers + (
     'XMLHttpRequest',
 )
 
+CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_PREFLIGHT_MAX_AGE = 86400
+CORS_ALLOW_CREDENTIALS = True
+
+
+# CORS_PREFLIGHT_MAX_AGE = 86400

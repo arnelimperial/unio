@@ -17,7 +17,7 @@ $ docker secret rm my_secret # delete secret
 #### Create Docker Network
 
 ```bash
-$ docker network create project_network
+$ docker network create app-network
 $ docker network ls
 ```
 
