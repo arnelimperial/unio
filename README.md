@@ -56,12 +56,3 @@ $ docker-compose exec backend-api ls -la /usr/src/app # check hidden files
 $ docker-compose exec backend-api sh # interact with the backend-api service environment
 $ exit 
 ```
-
-# First instance
-python manage.py runserver 0.0.0.0:8000
-
-# Second instance
-python manage.py runserver 0.0.0.0:8001
-
-# Third instance
-python manage.py runserver 0.0.0.0:8002
