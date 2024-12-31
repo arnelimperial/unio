@@ -1,30 +1,22 @@
 import os
 from decouple import config, Csv
+from django.conf import settings
 from pathlib import Path
+from datetime import timedelta
 from corsheaders.defaults import default_headers
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='secretkey')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost, 127.0.0.1, django-app, host.docker.internal', cast=Csv())
 
-
-AUTH_USER_MODEL = "users.User"
-
-# Application definition
-
+# Application definition & Middlewares
+# ------------------------------------------------------------------------------
 DJANGO_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +31,9 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
@@ -60,6 +55,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Common & Templates
+# ------------------------------------------------------------------------------
+AUTH_USER_MODEL = "users.User"
 
 ROOT_URLCONF = 'core.urls'
 
@@ -81,10 +79,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+LANGUAGE_CODE = 'en-us'
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+TIME_ZONE = 'UTC'
 
+USE_I18N = True
+
+USE_TZ = True
+
+SITE_ID = 1
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_URL = 'static/'
+
+# Database & Cache
+# ------------------------------------------------------------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -96,16 +107,24 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Password & Auth Backends
+# ------------------------------------------------------------------------------
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -122,40 +141,42 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
+# CORS
+# ------------------------------------------------------------------------------
+CORS_ORIGIN_ALLOW_ALL = False
 
-LANGUAGE_CODE = 'en-us'
+CORS_ALLOW_CREDENTIALS = True
 
-TIME_ZONE = 'UTC'
+CSRF_HEADER_NAME = 'X-CSRFToken'
 
-USE_I18N = True
+CSRF_COOKIE_NAME = 'csrftoken'
 
-USE_TZ = True
+CORS_EXPOSE_HEADERS = ['Content-Type', 'authorization', 'X-CSRFToken', 'Access-Control-Allow-Origin: *',]
 
-SITE_ID = 1
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1:8001",
-    "http://127.0.0.1:8002",
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1:5173',
+    'http://localhost:5173',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+
 ]
+CORS_ORIGIN_WHITELIST = (
+     'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1:5173',
+    'http://localhost:5173',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+)
 
 CORS_ALLOW_HEADERS = default_headers + (
     'Access-Control-Allow-Origin',
@@ -169,9 +190,103 @@ CORS_ALLOW_HEADERS = default_headers + (
     'XMLHttpRequest',
 )
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_PREFLIGHT_MAX_AGE = 86400
 
-CORS_ALLOW_CREDENTIALS = True
+# GOOGLE CREDENTIALS SOCIAL AUTH
+# ------------------------------------------------------------------------------
+
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
+
+GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET')
+
+GOOGLE_REDIRECT_URI = 'http://localhost:8080/api/auth/google/callback'
+
+# ADMIN
+# ------------------------------------------------------------------------------
+# Django Admin URL.
+ADMIN_URL = config('ADMIN_URL', default='admin/')
+
+# django-rest-framework
+# -------------------------------------------------------------------------------
+
+DEFAULT_RENDERER_CLASSES = (
+    'rest_framework.renderers.JSONRenderer',
+)
+
+if DEBUG:
+    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + \
+        ('rest_framework.renderers.BrowsableAPIRenderer',)
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        'rest_framework.permissions.AllowAny'
+    ],
+    "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+
+}
+
+# Simple JWT
+# ------------------------------------------------------------------------------
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 
 
-# CORS_PREFLIGHT_MAX_AGE = 86400
+# Security
+# ------------------------------------------------------------------------------
+SESSION_COOKIE_HTTPONLY = False
+
+X_FRAME_OPTIONS = 'DENY'
+
+CSRF_COOKIE_HTTPONLY = False
+
+if not settings.DEBUG:
+
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    SECURE_SSL_REDIRECT = config(
+        'SECURE_SSL_REDIRECT', default=True, cast=bool)
+
+    SESSION_COOKIE_SECURE = config(
+        'SESSION_COOKIE_SECURE', default=True, cast=bool)
+
+    CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE',
+                                default=True, cast=bool)
+
+    SECURE_HSTS_SECONDS = config(
+        'SECURE_HSTS_SECONDS', default=18408206, cast=int)  # 60
+
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
+        'SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True, cast=bool)
+
+    SECURE_HSTS_PRELOAD = config(
+        'SECURE_HSTS_PRELOAD', default=True, cast=bool)
+
+    SECURE_CONTENT_TYPE_NOSNIFF = config(
+        'SECURE_CONTENT_TYPE_NOSNIFF', default=True, cast=bool)
+
+    SECURE_REFERRER_POLICY = config(
+        'REFERRER_POLICY', default='no-referrer-when-downgrade')
+
+    CORS_REPLACE_HTTPS_REFERER = True
+
+    CSRF_TRUSTED_ORIGINS = [
+        'https://www.arnelimperial.com',
+        # 'https://synchro-web.onrender.com',
+    ]
+
+
+

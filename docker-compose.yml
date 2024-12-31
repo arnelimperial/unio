@@ -30,6 +30,17 @@ services:
     restart: always
     ports:
       - 5432:5432
+  
+  pgbouncer:
+    image: pgbouncer/pgbouncer
+    environment:
+      DATABASE_URL: /run/secrets/database_url
+      PGBOUNCER_USER: myuser
+      PGBOUNCER_PASSWORD: /run/secrets/db_password
+    ports:
+      - 6432:6432
+    depends_on:
+      - postgres
 
   redis:
     image: redis:latest
@@ -62,6 +73,8 @@ secrets:
     file: ./app-secrets/db_password.txt
   secret_key:
     file: ./app-secrets/secret_key.txt
+  database_url:
+    file: ./app-secrets/database_url.txt
 
 networks:
   app-network:
