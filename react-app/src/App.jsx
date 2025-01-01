@@ -1,13 +1,22 @@
-import HeaderNav from "./HeaderNav";
-//import Login from "./Login";
-// import Signup from "./Signup";//
-// import "./App.css"; // Import custom CSS for themes
-import './styles.css'
+import { lazy } from "react";
+import { Toaster } from "react-hot-toast";
+import "./styles.css";
+
+const RouterList = lazy(() => import("./components/RouterList.tsx"));
+const HeaderNav = lazy(() => import("./components/HeaderNav.jsx"));
 
 function App() {
   return (
     <>
       <HeaderNav />
+      <main className="container">
+        <Toaster
+          toastOptions={{
+            duration: 5000,
+          }}
+        />
+        <RouterList />
+      </main>
     </>
   );
 }
