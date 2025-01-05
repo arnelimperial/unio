@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
 
 const HeaderNav = () => {
@@ -11,10 +12,10 @@ const HeaderNav = () => {
       <div className="navbar-right">
         <ul className="nav-links">
           <li>
-            <a href="/login">Login</a>
+            <NavLink to={"/login"}>Login</NavLink>
           </li>
           <li>
-            <a href="/about">About</a>
+            <NavLink to={"/signup"}>Signup</NavLink>
           </li>
           <li>
             <a href="/contact">Contact</a>

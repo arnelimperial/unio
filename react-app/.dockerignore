@@ -1,12 +1,22 @@
 npm-debug.log
 yarn-error.log
+.yarn/*
+!.yarn/versions
+!.yarn/releases
 .git
 .svn
 .env.*
 .DS_Store
-.vscode
-.idea
+Thumbs.db
+.vscode/
+.idea/
 *.md
 Dockerfile
-.dockerignore
 .gitignore
+.env
+*.tsbuildinfo
+
+# uncomment on production
+# /build 
+# /dist
+# node_modules

@@ -1,6 +1,6 @@
 import os
 from decouple import config, Csv
-from django.conf import settings
+# from django.conf import settings
 from pathlib import Path
 from datetime import timedelta
 from corsheaders.defaults import default_headers
@@ -34,6 +34,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
+    'sslserver',
 ]
 
 LOCAL_APPS = [
@@ -152,30 +153,16 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_HEADER_NAME = 'X-CSRFToken'
-
-CSRF_COOKIE_NAME = 'csrftoken'
-
 CORS_EXPOSE_HEADERS = ['Content-Type', 'authorization', 'X-CSRFToken', 'Access-Control-Allow-Origin: *',]
 
-CORS_ALLOW_CREDENTIALS = True
-
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000',
-    'http://localhost:8000',
-    'http://127.0.0.1:5173',
-    'http://localhost:5173',
-    'http://127.0.0.1:8080',
-    'http://localhost:8080',
+    'https://127.0.0.1:8080',
+    'https://localhost:8080',
 
 ]
 CORS_ORIGIN_WHITELIST = (
-     'http://127.0.0.1:8000',
-    'http://localhost:8000',
-    'http://127.0.0.1:5173',
-    'http://localhost:5173',
-    'http://127.0.0.1:8080',
-    'http://localhost:8080',
+    'https://127.0.0.1:8080',
+    'https://localhost:8080',
 )
 
 CORS_ALLOW_HEADERS = default_headers + (
@@ -253,40 +240,34 @@ X_FRAME_OPTIONS = 'DENY'
 
 CSRF_COOKIE_HTTPONLY = False
 
-if not settings.DEBUG:
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_NAME = 'csrftoken'
 
-    SECURE_SSL_REDIRECT = config(
-        'SECURE_SSL_REDIRECT', default=True, cast=bool)
+CSRF_COOKIE_SAMESITE = 'Lax'
 
-    SESSION_COOKIE_SECURE = config(
-        'SESSION_COOKIE_SECURE', default=True, cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
 
-    CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE',
-                                default=True, cast=bool)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
 
-    SECURE_HSTS_SECONDS = config(
-        'SECURE_HSTS_SECONDS', default=18408206, cast=int)  # 60
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int) # 1 year
 
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
-        'SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True, cast=bool)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True, cast=bool)
 
-    SECURE_HSTS_PRELOAD = config(
-        'SECURE_HSTS_PRELOAD', default=True, cast=bool)
+SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=True, cast=bool)
 
-    SECURE_CONTENT_TYPE_NOSNIFF = config(
-        'SECURE_CONTENT_TYPE_NOSNIFF', default=True, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
 
-    SECURE_REFERRER_POLICY = config(
-        'REFERRER_POLICY', default='no-referrer-when-downgrade')
+SECURE_BROWSER_XSS_FILTER = config('SECURE_BROWSER_XSS_FILTER', default=True, cast=bool)
 
-    CORS_REPLACE_HTTPS_REFERER = True
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://localhost:8080', cast=Csv())
 
-    CSRF_TRUSTED_ORIGINS = [
-        'https://www.arnelimperial.com',
-        # 'https://synchro-web.onrender.com',
-    ]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_CONTENT_TYPE_NOSNIFF = config('SECURE_CONTENT_TYPE_NOSNIFF', default=True, cast=bool)
 
 
+    
+
+    
 

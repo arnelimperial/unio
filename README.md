@@ -56,3 +56,16 @@ $ docker-compose exec backend-api ls -la /usr/src/app # check hidden files
 $ docker-compose exec backend-api sh # interact with the backend-api service environment
 $ exit 
 ```
+
+#### Generate a Self-Signed SSL Certificate with OpenSSL (Django)
+
+```bash
+$ mkdir ssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+-out ./ssl/cert.pem -keyout ./ssl/key.pem \
+-subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost"
+# Run Django localhost HTTPS
+$ python manage.py runsslserver 8000 --certificate ../ssl/cert.pem --key ../ssl/key.pem
+```
+
+
+

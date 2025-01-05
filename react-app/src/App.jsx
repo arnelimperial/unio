@@ -1,9 +1,9 @@
 import { lazy } from "react";
 import { Toaster } from "react-hot-toast";
-import "./styles.css";
+import "./App.css";
 
-const RouterList = lazy(() => import("./components/RouterList.tsx"));
-const HeaderNav = lazy(() => import("./components/HeaderNav.jsx"));
+const RouterList = lazy(() => import("./components/RouterList"));
+const HeaderNav = lazy(() => import("./components/HeaderNav"));
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
       <main className="container">
         <Toaster
           toastOptions={{
-            duration: 5000,
+            duration: 6000,
           }}
         />
         <RouterList />
