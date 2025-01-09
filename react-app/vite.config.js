@@ -16,7 +16,7 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0', // Allow access from the outside
+    host: "0.0.0.0", // Allow access from the outside
     port: 5173,
   }, // needed for docker and running at https
   preview: {

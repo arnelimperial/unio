@@ -1,6 +1,7 @@
 import os
 from decouple import config, Csv
 # from django.conf import settings
+import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 from corsheaders.defaults import default_headers
@@ -34,7 +35,6 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
-    'sslserver',
 ]
 
 LOCAL_APPS = [
@@ -97,16 +97,18 @@ STATIC_URL = 'static/'
 
 # Database & Cache
 # ------------------------------------------------------------------------------
+db_from_env = config('DATABASE_URL')
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='mydatabase'),
-        'USER': config('DB_USER', default='myuser'),
-        'PASSWORD': config('DB_PASSWORD', default='mypassword'),
-        'HOST': config('POSTGRES_HOST', default='localhost'), # Use localhost since Django is running outside Docker
-        'PORT': config('POSTGRES_PORT', default='5432'),
-    }
+    'default': dj_database_url.config(
+        default=db_from_env,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
+
+# Disable server-side cursors when using PgBouncer in transaction pooling mode
+DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
 
 CACHES = {
     "default": {
